@@ -62,6 +62,8 @@ void ui_init()
     lv_obj_t *screen = lv_screen_active();
     lv_obj_set_style_bg_color(screen, lv_color_hex(0x000000), LV_PART_MAIN);
     lv_obj_set_style_text_color(screen, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    lv_obj_clear_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollbar_mode(screen, LV_SCROLLBAR_MODE_OFF);
 
     sTimeLabel = lv_label_create(screen);
     lv_obj_set_width(sTimeLabel, 430);
@@ -77,17 +79,19 @@ void ui_init()
     lv_obj_set_style_text_font(sMetaLabel, rajdhani_medium_font(40, &lv_font_montserrat_20), 0);
     lv_obj_set_style_text_letter_space(sMetaLabel, 1, 0);
     lv_label_set_text(sMetaLabel, "Waiting for time");
-    lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -8);
+    lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
 
     sWeatherRow = lv_obj_create(screen);
     lv_obj_remove_style_all(sWeatherRow);
-    lv_obj_set_size(sWeatherRow, 340, 104);
+    lv_obj_set_size(sWeatherRow, 360, 118);
     lv_obj_set_layout(sWeatherRow, LV_LAYOUT_FLEX);
     lv_obj_set_flex_flow(sWeatherRow, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(sWeatherRow, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_column(sWeatherRow, 14, 0);
     lv_obj_set_style_pad_all(sWeatherRow, 0, 0);
-    lv_obj_align_to(sWeatherRow, sMetaLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
+    lv_obj_clear_flag(sWeatherRow, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollbar_mode(sWeatherRow, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_align_to(sWeatherRow, sMetaLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -4);
 
     sWeatherIcon = weather_icons_create(sWeatherRow);
 
@@ -97,7 +101,7 @@ void ui_init()
     lv_obj_set_style_text_font(sWeatherLabel, rajdhani_semibold_font(28, &lv_font_montserrat_28), 0);
     lv_obj_set_style_text_letter_space(sWeatherLabel, 1, 0);
     lv_label_set_text(sWeatherLabel, "WEATHER");
-    lv_obj_align_to(sWeatherLabel, sWeatherRow, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align_to(sWeatherLabel, sWeatherRow, LV_ALIGN_OUT_BOTTOM_MID, 0, -8);
 
     sCurrentTempLabel = lv_label_create(sWeatherRow);
     lv_obj_set_width(sCurrentTempLabel, 190);
@@ -112,7 +116,7 @@ void ui_init()
     lv_obj_set_style_text_font(sRangeLabel, rajdhani_medium_font(40, &lv_font_montserrat_20), 0);
     lv_obj_set_style_text_letter_space(sRangeLabel, 1, 0);
     lv_label_set_text(sRangeLabel, "H --  L --");
-    lv_obj_align_to(sRangeLabel, sWeatherLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -2);
+    lv_obj_align_to(sRangeLabel, sWeatherLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
 
     sStatusLabel = lv_label_create(screen);
     lv_obj_set_width(sStatusLabel, 400);
