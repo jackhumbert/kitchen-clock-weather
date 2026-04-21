@@ -1,0 +1,7 @@
+{
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json",
+    "chat.tools.terminal.autoApprove": {
+        "git": true,
+        "pio": true
+    }
+}

@@ -1,0 +1,6 @@
+.DS_Store
+.pio/
+.vscode/*
+!.vscode/settings.json
+compile_commands.json
+include/secrets.h
