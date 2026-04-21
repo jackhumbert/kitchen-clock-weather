@@ -53,7 +53,10 @@
 - Weather icons are drawn in `src/weather_icons.cpp` with LVGL canvas primitives and a single static RGB565 draw buffer, so there is no external image asset pipeline to maintain.
 - Open-Meteo responses can arrive with chunked transfer encoding. Do not parse `HTTPClient::getStream()` directly with ArduinoJson for this endpoint; use `HTTPClient::getString()` or `writeToStream()` first so the framework de-chunks the body before JSON parsing.
 - The current clock face enables `LV_USE_TINY_TTF` and uses the embedded `RAJDHANI_REGULAR` TTF from `src/fonts.cpp` for the top time label. The current cache sizing is `LV_TINY_TTF_CACHE_GLYPH_CNT=64` and `LV_TINY_TTF_CACHE_KERNING_CNT=64`.
+- Large Rajdhani tiny_ttf glyphs for the 192 px time label can exhaust LVGL's default 64 KB built-in heap and trigger `stbtt__new_active` asserts during rasterization. This repo now backs LVGL's built-in allocator with a 1 MB PSRAM pool via `LV_MEM_POOL_ALLOC(...)` in `include/lv_conf.h`.
 - Weather UI refreshes should be driven from the latest weather snapshot every main-loop pass, with per-widget text/icon caching in `src/ui.cpp`. Gating weather redraws behind a coarse UI timer can leave stale weather/status text visible after a successful fetch until the device is restarted or the timer elapses.
+- On Arduino ESP32 3.1.0, treat `getLocalTime(...)` as the authoritative NTP-success check in `clock_service_sync()`. `configTzTime(...)` restarts SNTP on each call, and `sntp_get_sync_status()` can lag or stay too strict even after local time is usable.
+- SensorLib's `begin(Wire, ..., -1, -1)` convention preserves the existing ESP32 `Wire` pin configuration. On this board, initialize `Wire` once with SDA 15 / SCL 14, then pass the shared bus to CST9217 and PCF85063 without pins to avoid `Wire.cpp: setPins(): bus already initialized` errors.
 
 ## Framework Quirk
 

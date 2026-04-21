@@ -76,7 +76,7 @@ void ui_init()
     lv_obj_set_style_text_font(sTimeLabel, rajdhani_regular_font(192, &lv_font_montserrat_48), 0);
     lv_obj_set_style_text_letter_space(sTimeLabel, -2, 0);
     lv_label_set_text(sTimeLabel, "--:--");
-    lv_obj_align(sTimeLabel, LV_ALIGN_TOP_MID, 0, -8);
+    lv_obj_align(sTimeLabel, LV_ALIGN_TOP_MID, 0, 4);
 
     sMetaLabel = lv_label_create(screen);
     lv_obj_set_width(sMetaLabel, 360);
@@ -84,7 +84,7 @@ void ui_init()
     lv_obj_set_style_text_font(sMetaLabel, rajdhani_medium_font(40, &lv_font_montserrat_20), 0);
     lv_obj_set_style_text_letter_space(sMetaLabel, 1, 0);
     lv_label_set_text(sMetaLabel, "Waiting for time");
-    lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+    lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, -22);
 
     sWeatherRow = lv_obj_create(screen);
     lv_obj_remove_style_all(sWeatherRow);

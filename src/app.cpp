@@ -81,7 +81,12 @@ void app_loop()
 
     if (wifi_service_is_connected() &&
         (sLastClockSyncAttemptMs == 0 || now - sLastClockSyncAttemptMs >= clockSyncIntervalMs)) {
-        clock_service_sync(5000);
+        if (clock_service_sync(5000)) {
+            ClockSnapshot clockSnapshot;
+            clock_service_get_snapshot(clockSnapshot);
+            ui_set_time(clockSnapshot);
+            sLastClockRefreshMs = millis();
+        }
         sLastClockSyncAttemptMs = now;
     }
 

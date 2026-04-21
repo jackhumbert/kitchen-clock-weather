@@ -30,7 +30,7 @@ bool touch_init()
     Wire.begin(BoardConfig::kI2cSda, BoardConfig::kI2cScl);
 
     sTouch.setPins(BoardConfig::kTouchReset, BoardConfig::kTouchInterrupt);
-    if (!sTouch.begin(Wire, CST92XX_SLAVE_ADDRESS, BoardConfig::kI2cSda, BoardConfig::kI2cScl)) {
+    if (!sTouch.begin(Wire, CST92XX_SLAVE_ADDRESS, -1, -1)) {
         sTouchReady = false;
         return false;
     }

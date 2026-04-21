@@ -62,7 +62,7 @@ bool rtc_service_begin()
         return true;
     }
 
-    if (!sRtc.begin(Wire, BoardConfig::kI2cSda, BoardConfig::kI2cScl)) {
+    if (!sRtc.begin(Wire)) {
         sRtcAvailable = false;
         sRtcHasValidTime = false;
         return false;

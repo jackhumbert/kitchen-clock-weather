@@ -95,6 +95,10 @@ Core stack:
 - Built-in `WiFi.h`, `HTTPClient.h`, `time.h`, `Wire.h`
 - `ArduinoJson` for parsing weather API responses
 
+Implementation constraint:
+
+- Keep LVGL's heap in PSRAM for this design. The large Rajdhani tiny_ttf time label can overflow LVGL's default 64 KB built-in heap during glyph rasterization; this repo uses a 1 MB PSRAM-backed LVGL pool in `include/lv_conf.h`.
+
 Likely dependency strategy:
 
 - Prefer PlatformIO libraries where available.
