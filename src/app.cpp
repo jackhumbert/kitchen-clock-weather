@@ -17,19 +17,24 @@ char sStatusText[48] = "Booting";
 void update_status_text()
 {
     const WeatherSnapshot &weather = weather_service_get_snapshot();
+    const ClockSource clockSource = clock_service_source();
 
     if (!wifi_service_is_configured()) {
         snprintf(sStatusText, sizeof(sStatusText), "Add include/secrets.h");
+    } else if (!clock_service_has_valid_time()) {
+        snprintf(sStatusText, sizeof(sStatusText), "Waiting for time");
+    } else if (!wifi_service_is_connected() && clockSource == ClockSource::Rtc) {
+        snprintf(sStatusText, sizeof(sStatusText), "RTC fallback");
     } else if (!wifi_service_is_connected()) {
         snprintf(sStatusText, sizeof(sStatusText), "%s", wifi_service_status_text());
-    } else if (!clock_service_has_valid_time()) {
-        snprintf(sStatusText, sizeof(sStatusText), "Syncing time");
-    } else if (!weather.valid && AppConfig::locationConfigured()) {
+    } else if (!AppConfig::locationConfigured()) {
+        snprintf(sStatusText, sizeof(sStatusText), "Set weather location");
+    } else if (!weather.valid) {
         snprintf(sStatusText, sizeof(sStatusText), "Loading weather");
     } else if (weather.valid && weather.stale) {
         snprintf(sStatusText, sizeof(sStatusText), "Weather cached");
-    } else if (!AppConfig::locationConfigured()) {
-        snprintf(sStatusText, sizeof(sStatusText), "Set weather location");
+    } else if (clockSource == ClockSource::Rtc) {
+        snprintf(sStatusText, sizeof(sStatusText), "Using RTC time");
     } else {
         snprintf(sStatusText, sizeof(sStatusText), "Ready");
     }
@@ -71,8 +76,12 @@ void app_loop()
     display_process();
     wifi_service_update();
 
+    const uint32_t clockSyncIntervalMs = clock_service_source() == ClockSource::Ntp
+                                             ? AppConfig::kClockSyncIntervalMs
+                                             : AppConfig::kClockRetryIntervalMs;
+
     if (wifi_service_is_connected() &&
-        (now - sLastClockSyncAttemptMs >= AppConfig::kClockRetryIntervalMs || !clock_service_has_valid_time())) {
+        (sLastClockSyncAttemptMs == 0 || now - sLastClockSyncAttemptMs >= clockSyncIntervalMs)) {
         clock_service_sync(5000);
         sLastClockSyncAttemptMs = now;
     }

@@ -1,15 +1,27 @@
 #include <Arduino.h>
+#include <esp_sntp.h>
 
 #include <cstring>
 #include <ctime>
 
 #include "app_config.h"
 #include "clock_service.h"
+#include "rtc_service.h"
+
+namespace {
+ClockSource sClockSource = ClockSource::None;
+}
 
 void clock_service_begin()
 {
     setenv("TZ", AppConfig::kWeatherTimezonePosix, 1);
     tzset();
+
+    sClockSource = ClockSource::None;
+    rtc_service_begin();
+    if (rtc_service_sync_system_clock()) {
+        sClockSource = ClockSource::Rtc;
+    }
 }
 
 bool clock_service_sync(uint32_t timeoutMs)
@@ -19,7 +31,9 @@ bool clock_service_sync(uint32_t timeoutMs)
     const uint32_t startMs = millis();
     struct tm timeInfo = {};
     while (millis() - startMs < timeoutMs) {
-        if (getLocalTime(&timeInfo, 250)) {
+        if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED && getLocalTime(&timeInfo, 250)) {
+            sClockSource = ClockSource::Ntp;
+            rtc_service_store_system_clock();
             return true;
         }
         delay(50);
@@ -56,4 +70,14 @@ bool clock_service_get_snapshot(ClockSnapshot &snapshot)
     strftime(dateText, sizeof(dateText), "%a %b %d", &timeInfo);
     snprintf(snapshot.metaText, sizeof(snapshot.metaText), "%s %s", zoneText, dateText);
     return true;
+}
+
+ClockSource clock_service_source()
+{
+    return sClockSource;
+}
+
+bool clock_service_rtc_available()
+{
+    return rtc_service_is_available();
 }

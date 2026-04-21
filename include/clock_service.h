@@ -2,6 +2,12 @@
 
 #include <stdint.h>
 
+enum class ClockSource : uint8_t {
+    None,
+    Rtc,
+    Ntp,
+};
+
 struct ClockSnapshot {
     bool valid = false;
     char timeText[16] = "--:--";
@@ -12,3 +18,5 @@ void clock_service_begin();
 bool clock_service_sync(uint32_t timeoutMs);
 bool clock_service_has_valid_time();
 bool clock_service_get_snapshot(ClockSnapshot &snapshot);
+ClockSource clock_service_source();
+bool clock_service_rtc_available();

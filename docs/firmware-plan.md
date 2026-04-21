@@ -123,6 +123,10 @@ Recommended timezone handling:
 
 This gives automatic EST/EDT switching without hardcoding offsets in app logic.
 
+Implementation note:
+
+- Store UTC in the RTC and apply the Eastern timezone only at display time. That avoids stale DST offsets if the device stays offline across a DST transition.
+
 ## Weather Strategy
 
 Use Open-Meteo directly from the device for the first version.
@@ -177,8 +181,8 @@ Mapping logic:
 
 Implementation choice:
 
-- Pre-convert icons into LVGL image assets and compile them into flash.
-- Avoid runtime PNG/JPEG decoding for v1.
+- Draw the icon set directly with LVGL canvas primitives.
+- Keep the icon renderer self-contained in `src/weather_icons.cpp` so no asset conversion pipeline is required.
 
 ## UI Plan
 

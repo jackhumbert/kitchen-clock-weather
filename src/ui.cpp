@@ -5,10 +5,12 @@
 
 #include "app_config.h"
 #include "ui.h"
+#include "weather_icons.h"
 
 namespace {
 lv_obj_t *sTimeLabel = nullptr;
 lv_obj_t *sMetaLabel = nullptr;
+lv_obj_t *sWeatherIcon = nullptr;
 lv_obj_t *sWeatherLabel = nullptr;
 lv_obj_t *sCurrentTempLabel = nullptr;
 lv_obj_t *sRangeLabel = nullptr;
@@ -31,16 +33,20 @@ void ui_init()
     lv_label_set_text(sMetaLabel, "Waiting for time");
     lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
+    sWeatherIcon = weather_icons_create(screen);
+    lv_obj_align(sWeatherIcon, LV_ALIGN_CENTER, 0, -38);
+
     sWeatherLabel = lv_label_create(screen);
-    lv_obj_set_style_text_font(sWeatherLabel, &lv_font_montserrat_22, 0);
+    lv_obj_set_width(sWeatherLabel, 220);
+    lv_obj_set_style_text_align(sWeatherLabel, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_text_font(sWeatherLabel, &lv_font_montserrat_14, 0);
     lv_label_set_text(sWeatherLabel, "WEATHER");
-    lv_obj_align(screen, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_align(sWeatherLabel, LV_ALIGN_CENTER, 0, -10);
+    lv_obj_align_to(sWeatherLabel, sWeatherIcon, LV_ALIGN_OUT_BOTTOM_MID, 0, 8);
 
     sCurrentTempLabel = lv_label_create(screen);
     lv_obj_set_style_text_font(sCurrentTempLabel, &lv_font_montserrat_48, 0);
     lv_label_set_text(sCurrentTempLabel, "--");
-    lv_obj_align_to(sCurrentTempLabel, sWeatherLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    lv_obj_align_to(sCurrentTempLabel, sWeatherLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 6);
 
     sRangeLabel = lv_label_create(screen);
     lv_obj_set_style_text_font(sRangeLabel, &lv_font_montserrat_20, 0);
@@ -64,12 +70,14 @@ void ui_set_time(const ClockSnapshot &snapshot)
 void ui_set_weather(const WeatherSnapshot &snapshot)
 {
     if (!snapshot.valid) {
+        weather_icons_set_icon(sWeatherIcon, WeatherIcon::Unknown);
         lv_label_set_text(sWeatherLabel, "WEATHER");
         lv_label_set_text(sCurrentTempLabel, "--");
         lv_label_set_text(sRangeLabel, "H --  L --");
         return;
     }
 
+    weather_icons_set_icon(sWeatherIcon, snapshot.icon);
     lv_label_set_text(sWeatherLabel, weather_service_icon_text(snapshot.icon));
 
     char currentTemp[16] = {};

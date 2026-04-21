@@ -185,13 +185,13 @@ const char *weather_service_icon_text(WeatherIcon icon)
         case WeatherIcon::ClearDay:
             return "CLEAR";
         case WeatherIcon::ClearNight:
-            return "CLEAR N";
+            return "CLEAR NIGHT";
         case WeatherIcon::PartlyCloudyDay:
-            return "PARTLY";
+            return "PARTLY CLOUDY";
         case WeatherIcon::PartlyCloudyNight:
-            return "PARTLY N";
+            return "PARTLY CLOUDY N";
         case WeatherIcon::Cloudy:
-            return "CLOUDS";
+            return "CLOUDY";
         case WeatherIcon::Fog:
             return "FOG";
         case WeatherIcon::Rain:
@@ -199,7 +199,7 @@ const char *weather_service_icon_text(WeatherIcon icon)
         case WeatherIcon::Snow:
             return "SNOW";
         case WeatherIcon::Thunderstorm:
-            return "STORM";
+            return "THUNDER";
         case WeatherIcon::Unknown:
         default:
             return "WEATHER";

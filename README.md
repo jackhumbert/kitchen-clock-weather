@@ -8,12 +8,12 @@ Firmware for the Waveshare ESP32-S3-Touch-AMOLED-1.75-B using PlatformIO, Arduin
 - Display bring-up works through Arduino_GFX and LVGL 9.
 - CST9217 touch input is wired into LVGL through SensorLib.
 - Wi-Fi, NTP time sync, EST/EDT timezone handling, and Open-Meteo weather fetch are wired.
+- PCF85063 RTC fallback now seeds the system clock before Wi-Fi comes up and is refreshed after successful NTP syncs.
+- Weather conditions now render as canvas-drawn LVGL icons instead of placeholder text.
 - The main UI is a functional first-pass clock and weather screen.
 
 Not implemented yet:
 
-- PCF85063 RTC fallback.
-- Final weather icon assets.
 - Full on-device validation beyond initial bring-up.
 
 ## Board Notes

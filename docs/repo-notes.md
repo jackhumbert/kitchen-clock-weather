@@ -48,6 +48,8 @@
 - `compile_commands.json` is intentionally local-only and ignored.
 - Keep the default `esp32s3_120_16_8-qio_opi` board geometry for this repo; the intended board really is a 16 MB flash / 8 MB PSRAM target.
 - If multiple ESP32-class USB devices are attached, PlatformIO can auto-detect the wrong port. Prefer `pio run -t upload --upload-port <port>` and target the Espressif native USB JTAG/serial device with VID:PID `303A:1001`.
+- RTC fallback is implemented with SensorLib's `SensorPCF85063` driver on the shared I2C bus. The firmware stores UTC in the RTC, seeds system time from it on boot, and writes back after successful NTP syncs.
+- Weather icons are drawn in `src/weather_icons.cpp` with LVGL canvas primitives and a single static RGB565 draw buffer, so there is no external image asset pipeline to maintain.
 
 ## Framework Quirk
 
