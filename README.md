@@ -14,7 +14,7 @@ Not implemented yet:
 
 - PCF85063 RTC fallback.
 - Final weather icon assets.
-- Hardware validation on the actual board.
+- Full on-device validation beyond initial bring-up.
 
 ## Board Notes
 
@@ -23,7 +23,8 @@ Verified for the ESP32-S3-Touch-AMOLED-1.75-B:
 - Display: CO5300 over QSPI.
 - Touch: CST9217 over I2C.
 - Resolution: 466 x 466.
-- MCU: ESP32-S3R8 with 8 MB PSRAM and 16 MB flash.
+- MCU: ESP32-S3 with 8 MB PSRAM and 16 MB flash.
+- The intended board reports 8 MB PSRAM and 16 MB flash during upload. The earlier 2 MB / 4 MB readings came from a different ESP32 that was attached at the same time.
 
 Verified pin mappings from vendor examples:
 
@@ -66,3 +67,13 @@ pio device monitor -b 115200
 This PlatformIO and Arduino framework combination needs the active framework package's `libraries/Network/src` include path added explicitly at build time. That is handled by `scripts/framework_workarounds.py`.
 
 Do not broaden that workaround to scan all installed framework packages. Mixing headers from multiple installed Arduino core snapshots causes `NetworkEvents::postEvent` signature mismatches and linker failures.
+
+## Upload Port Quirk
+
+If multiple ESP32 devices are attached over USB, do not rely on PlatformIO's auto-detected upload port. The target board appears as Espressif's native USB JTAG/serial device with VID:PID `303A:1001`, and flashing the wrong ESP32 can lead to misleading hardware readings and boot failures.
+
+Use an explicit upload port when more than one serial device is present:
+
+```bash
+pio run -t upload --upload-port /dev/cu.usbmodem23101
+```

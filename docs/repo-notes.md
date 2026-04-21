@@ -9,7 +9,8 @@
 - Touch controller: CST9217 over I2C.
 - RTC: PCF85063.
 - Screen size: 466 x 466.
-- MCU resources: ESP32-S3R8, 8 MB PSRAM, 16 MB flash.
+- MCU resources observed on the intended board during upload: 8 MB embedded PSRAM and 16 MB embedded flash.
+- The earlier `Embedded Flash 4MB (XMC)` and `Embedded PSRAM 2MB (AP_3v3)` readings were from a different ESP32 that was attached at the same time.
 
 ### Firmware Stack
 
@@ -45,6 +46,8 @@
 - The project builds successfully with `pio run`.
 - Generate IntelliSense metadata with `pio run -t compiledb`.
 - `compile_commands.json` is intentionally local-only and ignored.
+- Keep the default `esp32s3_120_16_8-qio_opi` board geometry for this repo; the intended board really is a 16 MB flash / 8 MB PSRAM target.
+- If multiple ESP32-class USB devices are attached, PlatformIO can auto-detect the wrong port. Prefer `pio run -t upload --upload-port <port>` and target the Espressif native USB JTAG/serial device with VID:PID `303A:1001`.
 
 ## Framework Quirk
 

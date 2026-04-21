@@ -27,7 +27,8 @@ Do not start from Waveshare's LVGL 8 sketches as-is. Reuse only the board-specif
 Confirmed hardware for the 1.75-B:
 
 - Same electronics as the standard 1.75 board, but with the protective case.
-- ESP32-S3R8, 8 MB PSRAM, 16 MB flash.
+- The intended board identifies itself during upload as 8 MB embedded PSRAM and 16 MB embedded flash.
+- The earlier 2 MB / 4 MB hardware readings came from a different ESP32 that was attached at the same time, not from the target board.
 - 466 x 466 round AMOLED.
 - CO5300 display driver over QSPI.
 - CST9217 touch controller over I2C.
