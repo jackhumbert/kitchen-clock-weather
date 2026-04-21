@@ -50,6 +50,7 @@
 - If multiple ESP32-class USB devices are attached, PlatformIO can auto-detect the wrong port. Prefer `pio run -t upload --upload-port <port>` and target the Espressif native USB JTAG/serial device with VID:PID `303A:1001`.
 - RTC fallback is implemented with SensorLib's `SensorPCF85063` driver on the shared I2C bus. The firmware stores UTC in the RTC, seeds system time from it on boot, and writes back after successful NTP syncs.
 - Weather icons are drawn in `src/weather_icons.cpp` with LVGL canvas primitives and a single static RGB565 draw buffer, so there is no external image asset pipeline to maintain.
+- Open-Meteo responses can arrive with chunked transfer encoding. Do not parse `HTTPClient::getStream()` directly with ArduinoJson for this endpoint; use `HTTPClient::getString()` or `writeToStream()` first so the framework de-chunks the body before JSON parsing.
 
 ## Framework Quirk
 

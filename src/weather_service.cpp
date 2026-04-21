@@ -92,11 +92,12 @@ int rounded_int(float value)
     return static_cast<int>(lroundf(value));
 }
 
-bool parse_response(Stream &responseStream)
+bool parse_response(const String &payload)
 {
     DynamicJsonDocument doc(4096);
-    const auto error = deserializeJson(doc, responseStream);
+    const auto error = deserializeJson(doc, payload);
     if (error) {
+        Serial.printf("weather: parse failed: %s (%u bytes)\n", error.c_str(), payload.length());
         set_status_text("JSON ERROR");
         return false;
     }
@@ -183,7 +184,17 @@ bool weather_service_fetch_now()
         return false;
     }
 
-    const bool parsed = parse_response(http.getStream());
+    String payload = http.getString();
+    if (payload.isEmpty()) {
+        set_status_text("EMPTY BODY");
+        http.end();
+        if (sSnapshot.valid) {
+            sSnapshot.stale = true;
+        }
+        return false;
+    }
+
+    const bool parsed = parse_response(payload);
     http.end();
 
     if (!parsed) {
