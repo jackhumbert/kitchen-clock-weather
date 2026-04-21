@@ -10,6 +10,7 @@ Firmware for the Waveshare ESP32-S3-Touch-AMOLED-1.75-B using PlatformIO, Arduin
 - Wi-Fi, NTP time sync, EST/EDT timezone handling, and Open-Meteo weather fetch are wired.
 - PCF85063 RTC fallback now seeds the system clock before Wi-Fi comes up and is refreshed after successful NTP syncs.
 - Weather conditions now render as canvas-drawn LVGL icons instead of placeholder text.
+- The top time label now uses an embedded Rajdhani TTF through LVGL tiny_ttf so it can render larger than the built-in Montserrat fonts.
 - The main UI is a functional first-pass clock and weather screen.
 
 Not implemented yet:

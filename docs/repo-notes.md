@@ -46,11 +46,13 @@
 - The project builds successfully with `pio run`.
 - Generate IntelliSense metadata with `pio run -t compiledb`.
 - `compile_commands.json` is intentionally local-only and ignored.
+- The bundled LVGL Montserrat assets in this repo top out at `lv_font_montserrat_48`. Larger text needs either a generated bitmap font or a runtime font backend such as `LV_USE_TINY_TTF`.
 - Keep the default `esp32s3_120_16_8-qio_opi` board geometry for this repo; the intended board really is a 16 MB flash / 8 MB PSRAM target.
 - If multiple ESP32-class USB devices are attached, PlatformIO can auto-detect the wrong port. Prefer `pio run -t upload --upload-port <port>` and target the Espressif native USB JTAG/serial device with VID:PID `303A:1001`.
 - RTC fallback is implemented with SensorLib's `SensorPCF85063` driver on the shared I2C bus. The firmware stores UTC in the RTC, seeds system time from it on boot, and writes back after successful NTP syncs.
 - Weather icons are drawn in `src/weather_icons.cpp` with LVGL canvas primitives and a single static RGB565 draw buffer, so there is no external image asset pipeline to maintain.
 - Open-Meteo responses can arrive with chunked transfer encoding. Do not parse `HTTPClient::getStream()` directly with ArduinoJson for this endpoint; use `HTTPClient::getString()` or `writeToStream()` first so the framework de-chunks the body before JSON parsing.
+- The current clock face enables `LV_USE_TINY_TTF` and uses the embedded `RAJDHANI_REGULAR` TTF from `src/fonts.cpp` for the top time label. The current cache sizing is `LV_TINY_TTF_CACHE_GLYPH_CNT=64` and `LV_TINY_TTF_CACHE_KERNING_CNT=64`.
 
 ## Framework Quirk
 

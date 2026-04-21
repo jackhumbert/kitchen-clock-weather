@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "app_config.h"
+#include "font.h"
 #include "ui.h"
 #include "weather_icons.h"
 
@@ -15,6 +16,20 @@ lv_obj_t *sWeatherLabel = nullptr;
 lv_obj_t *sCurrentTempLabel = nullptr;
 lv_obj_t *sRangeLabel = nullptr;
 lv_obj_t *sStatusLabel = nullptr;
+char sLastTimeText[16] = {};
+char sLastMetaText[32] = {};
+
+const lv_font_t *time_font()
+{
+#if LV_USE_TINY_TTF
+    lv_font_t *font = RAJDHANI_REGULAR(64);
+    if (font != nullptr) {
+        return font;
+    }
+#endif
+
+    return &lv_font_montserrat_48;
+}
 }
 
 void ui_init()
@@ -24,34 +39,43 @@ void ui_init()
     lv_obj_set_style_text_color(screen, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
 
     sTimeLabel = lv_label_create(screen);
-    lv_obj_set_style_text_font(sTimeLabel, &lv_font_montserrat_48, 0);
+    lv_obj_set_width(sTimeLabel, 320);
+    lv_obj_set_style_text_align(sTimeLabel, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_style_text_font(sTimeLabel, time_font(), 0);
+    lv_obj_set_style_text_letter_space(sTimeLabel, 1, 0);
     lv_label_set_text(sTimeLabel, "--:--");
-    lv_obj_align(sTimeLabel, LV_ALIGN_TOP_MID, 0, 48);
+    lv_obj_align(sTimeLabel, LV_ALIGN_TOP_MID, 0, 28);
 
     sMetaLabel = lv_label_create(screen);
+    lv_obj_set_width(sMetaLabel, 260);
+    lv_obj_set_style_text_align(sMetaLabel, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_text_font(sMetaLabel, &lv_font_montserrat_20, 0);
     lv_label_set_text(sMetaLabel, "Waiting for time");
-    lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    lv_obj_align_to(sMetaLabel, sTimeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 4);
 
     sWeatherIcon = weather_icons_create(screen);
-    lv_obj_align(sWeatherIcon, LV_ALIGN_CENTER, 0, -38);
+    lv_obj_align(sWeatherIcon, LV_ALIGN_CENTER, 0, -16);
 
     sWeatherLabel = lv_label_create(screen);
     lv_obj_set_width(sWeatherLabel, 220);
     lv_obj_set_style_text_align(sWeatherLabel, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_text_font(sWeatherLabel, &lv_font_montserrat_14, 0);
     lv_label_set_text(sWeatherLabel, "WEATHER");
-    lv_obj_align_to(sWeatherLabel, sWeatherIcon, LV_ALIGN_OUT_BOTTOM_MID, 0, 8);
+    lv_obj_align_to(sWeatherLabel, sWeatherIcon, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
     sCurrentTempLabel = lv_label_create(screen);
+    lv_obj_set_width(sCurrentTempLabel, 220);
+    lv_obj_set_style_text_align(sCurrentTempLabel, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_text_font(sCurrentTempLabel, &lv_font_montserrat_48, 0);
     lv_label_set_text(sCurrentTempLabel, "--");
-    lv_obj_align_to(sCurrentTempLabel, sWeatherLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 6);
+    lv_obj_align_to(sCurrentTempLabel, sWeatherLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 8);
 
     sRangeLabel = lv_label_create(screen);
+    lv_obj_set_width(sRangeLabel, 220);
+    lv_obj_set_style_text_align(sRangeLabel, LV_TEXT_ALIGN_CENTER, 0);
     lv_obj_set_style_text_font(sRangeLabel, &lv_font_montserrat_20, 0);
     lv_label_set_text(sRangeLabel, "H --  L --");
-    lv_obj_align_to(sRangeLabel, sCurrentTempLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 12);
+    lv_obj_align_to(sRangeLabel, sCurrentTempLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
     sStatusLabel = lv_label_create(screen);
     lv_obj_set_width(sStatusLabel, 320);
@@ -63,8 +87,15 @@ void ui_init()
 
 void ui_set_time(const ClockSnapshot &snapshot)
 {
-    lv_label_set_text(sTimeLabel, snapshot.timeText);
-    lv_label_set_text(sMetaLabel, snapshot.metaText);
+    if (strcmp(sLastTimeText, snapshot.timeText) != 0) {
+        snprintf(sLastTimeText, sizeof(sLastTimeText), "%s", snapshot.timeText);
+        lv_label_set_text(sTimeLabel, sLastTimeText);
+    }
+
+    if (strcmp(sLastMetaText, snapshot.metaText) != 0) {
+        snprintf(sLastMetaText, sizeof(sLastMetaText), "%s", snapshot.metaText);
+        lv_label_set_text(sMetaLabel, sLastMetaText);
+    }
 }
 
 void ui_set_weather(const WeatherSnapshot &snapshot)
