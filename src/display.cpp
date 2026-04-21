@@ -4,11 +4,13 @@
 
 #include "board.h"
 #include "display.h"
+#include "touch.h"
 
 namespace {
 Arduino_DataBus *sBus = nullptr;
 Arduino_GFX *sGfx = nullptr;
 lv_display_t *sLvDisplay = nullptr;
+lv_indev_t *sLvTouchInput = nullptr;
 uint8_t *sBuffer1 = nullptr;
 uint8_t *sBuffer2 = nullptr;
 
@@ -73,6 +75,16 @@ bool display_init()
     sLvDisplay = lv_display_create(BoardConfig::kDisplayWidth, BoardConfig::kDisplayHeight);
     lv_display_set_flush_cb(sLvDisplay, display_flush);
     lv_display_set_buffers(sLvDisplay, sBuffer1, sBuffer2, bufferBytes, LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+    if (touch_init()) {
+        sLvTouchInput = lv_indev_create();
+        lv_indev_set_type(sLvTouchInput, LV_INDEV_TYPE_POINTER);
+        lv_indev_set_display(sLvTouchInput, sLvDisplay);
+        lv_indev_set_read_cb(sLvTouchInput, touch_read);
+    } else {
+        Serial.println("touch_init failed; continuing without touch input");
+    }
+
     return true;
 }
 

@@ -18,6 +18,13 @@
 - LVGL 9.x.
 - Arduino_GFX for display output.
 - ArduinoJson for Open-Meteo parsing.
+- SensorLib for CST9217 touch.
+
+### Touch Notes
+
+- SensorLib is available from the PlatformIO registry as `lewisxhe/SensorLib`.
+- The vendor LVGL widget example for this board configures the CST9217 with `setMaxCoordinates(466, 466)` and `setMirrorXY(true, true)`.
+- The current firmware reads touch points in the LVGL input callback instead of depending on `TP_INT` edge handling.
 
 ### Confirmed Pin Map
 

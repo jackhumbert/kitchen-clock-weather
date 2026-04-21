@@ -6,12 +6,12 @@ Firmware for the Waveshare ESP32-S3-Touch-AMOLED-1.75-B using PlatformIO, Arduin
 
 - PlatformIO project scaffolds and builds successfully.
 - Display bring-up works through Arduino_GFX and LVGL 9.
+- CST9217 touch input is wired into LVGL through SensorLib.
 - Wi-Fi, NTP time sync, EST/EDT timezone handling, and Open-Meteo weather fetch are wired.
 - The main UI is a functional first-pass clock and weather screen.
 
 Not implemented yet:
 
-- CST9217 touch input.
 - PCF85063 RTC fallback.
 - Final weather icon assets.
 - Hardware validation on the actual board.
