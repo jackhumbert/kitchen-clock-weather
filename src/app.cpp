@@ -30,7 +30,7 @@ void update_status_text()
     } else if (!AppConfig::locationConfigured()) {
         snprintf(sStatusText, sizeof(sStatusText), "Set weather location");
     } else if (!weather.valid) {
-        snprintf(sStatusText, sizeof(sStatusText), "Loading weather");
+        snprintf(sStatusText, sizeof(sStatusText), "%s", weather_service_status_text());
     } else if (weather.valid && weather.stale) {
         snprintf(sStatusText, sizeof(sStatusText), "Weather cached");
     } else if (clockSource == ClockSource::Rtc) {

@@ -4,6 +4,7 @@
 #include <WiFiClientSecure.h>
 
 #include <cmath>
+#include <cstring>
 
 #include "app_config.h"
 #include "weather_service.h"
@@ -13,6 +14,17 @@ namespace {
 WeatherSnapshot sSnapshot;
 uint32_t sLastFetchAttemptMs = 0;
 uint32_t sLastSuccessMs = 0;
+char sStatusText[24] = "BOOTING";
+
+void set_status_text(const char *text)
+{
+    if (strncmp(sStatusText, text, sizeof(sStatusText)) == 0) {
+        return;
+    }
+
+    snprintf(sStatusText, sizeof(sStatusText), "%s", text);
+    Serial.printf("weather: %s\n", sStatusText);
+}
 
 WeatherIcon map_weather_icon(int weatherCode, bool isDay)
 {
@@ -85,12 +97,14 @@ bool parse_response(Stream &responseStream)
     DynamicJsonDocument doc(4096);
     const auto error = deserializeJson(doc, responseStream);
     if (error) {
+        set_status_text("JSON ERROR");
         return false;
     }
 
     const JsonVariant current = doc["current"];
     const JsonVariant daily = doc["daily"];
     if (current.isNull() || daily.isNull()) {
+        set_status_text("EMPTY DATA");
         return false;
     }
 
@@ -109,6 +123,7 @@ bool parse_response(Stream &responseStream)
 void weather_service_begin()
 {
     sSnapshot = WeatherSnapshot {};
+    set_status_text(AppConfig::locationConfigured() ? "WAITING WIFI" : "NO LOCATION");
 }
 
 void weather_service_update()
@@ -120,6 +135,7 @@ void weather_service_update()
     }
 
     if (!AppConfig::locationConfigured()) {
+        set_status_text("NO LOCATION");
         return;
     }
 
@@ -127,6 +143,7 @@ void weather_service_update()
         if (sSnapshot.valid) {
             sSnapshot.stale = true;
         }
+        set_status_text("NO WIFI");
         return;
     }
 
@@ -138,21 +155,27 @@ void weather_service_update()
 bool weather_service_fetch_now()
 {
     if (!AppConfig::locationConfigured() || !wifi_service_is_connected()) {
+        set_status_text(!AppConfig::locationConfigured() ? "NO LOCATION" : "NO WIFI");
         return false;
     }
 
     sLastFetchAttemptMs = millis();
+    set_status_text("FETCHING");
 
     WiFiClientSecure client;
     client.setInsecure();
 
     HTTPClient http;
     if (!http.begin(client, build_weather_url())) {
+        set_status_text("HTTP BEGIN");
         return false;
     }
 
     const int httpCode = http.GET();
     if (httpCode != HTTP_CODE_OK) {
+        char httpStatus[24] = {};
+        snprintf(httpStatus, sizeof(httpStatus), "HTTP %d", httpCode);
+        set_status_text(httpStatus);
         http.end();
         if (sSnapshot.valid) {
             sSnapshot.stale = true;
@@ -171,6 +194,14 @@ bool weather_service_fetch_now()
     }
 
     sLastSuccessMs = millis();
+    set_status_text("UPDATED");
+    Serial.printf(
+        "weather: %s %d%c H%d L%d\n",
+        weather_service_icon_text(sSnapshot.icon),
+        sSnapshot.currentTemp,
+        AppConfig::kUseMetric ? 'C' : 'F',
+        sSnapshot.highTemp,
+        sSnapshot.lowTemp);
     return true;
 }
 
@@ -204,4 +235,9 @@ const char *weather_service_icon_text(WeatherIcon icon)
         default:
             return "WEATHER";
     }
+}
+
+const char *weather_service_status_text()
+{
+    return sStatusText;
 }

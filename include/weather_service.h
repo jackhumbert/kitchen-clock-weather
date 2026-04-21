@@ -31,3 +31,4 @@ void weather_service_update();
 bool weather_service_fetch_now();
 const WeatherSnapshot &weather_service_get_snapshot();
 const char *weather_service_icon_text(WeatherIcon icon);
+const char *weather_service_status_text();

@@ -71,7 +71,7 @@ void ui_set_weather(const WeatherSnapshot &snapshot)
 {
     if (!snapshot.valid) {
         weather_icons_set_icon(sWeatherIcon, WeatherIcon::Unknown);
-        lv_label_set_text(sWeatherLabel, "WEATHER");
+        lv_label_set_text(sWeatherLabel, weather_service_status_text());
         lv_label_set_text(sCurrentTempLabel, "--");
         lv_label_set_text(sRangeLabel, "H --  L --");
         return;
