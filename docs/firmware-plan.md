@@ -218,6 +218,7 @@ LVGL guidance:
 
 - Use one screen only for v1.
 - Avoid complex animations.
+- Treat the UI as a projection of the latest service snapshots, not as a second state machine. In particular, the weather section should be updated from the current `WeatherSnapshot` every app-loop pass, while `ui.cpp` suppresses redundant LVGL text/icon writes when values have not changed.
 - Update only labels and icon objects when data changes.
 - Keep the main loop non-blocking.
 

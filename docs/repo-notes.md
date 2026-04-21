@@ -53,6 +53,7 @@
 - Weather icons are drawn in `src/weather_icons.cpp` with LVGL canvas primitives and a single static RGB565 draw buffer, so there is no external image asset pipeline to maintain.
 - Open-Meteo responses can arrive with chunked transfer encoding. Do not parse `HTTPClient::getStream()` directly with ArduinoJson for this endpoint; use `HTTPClient::getString()` or `writeToStream()` first so the framework de-chunks the body before JSON parsing.
 - The current clock face enables `LV_USE_TINY_TTF` and uses the embedded `RAJDHANI_REGULAR` TTF from `src/fonts.cpp` for the top time label. The current cache sizing is `LV_TINY_TTF_CACHE_GLYPH_CNT=64` and `LV_TINY_TTF_CACHE_KERNING_CNT=64`.
+- Weather UI refreshes should be driven from the latest weather snapshot every main-loop pass, with per-widget text/icon caching in `src/ui.cpp`. Gating weather redraws behind a coarse UI timer can leave stale weather/status text visible after a successful fetch until the device is restarted or the timer elapses.
 
 ## Framework Quirk
 

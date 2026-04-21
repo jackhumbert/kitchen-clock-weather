@@ -19,6 +19,11 @@ lv_obj_t *sRangeLabel = nullptr;
 lv_obj_t *sStatusLabel = nullptr;
 char sLastTimeText[16] = {};
 char sLastMetaText[32] = {};
+char sLastWeatherText[24] = {};
+char sLastCurrentTempText[16] = {};
+char sLastRangeText[24] = {};
+WeatherIcon sLastWeatherIcon = WeatherIcon::Unknown;
+bool sWeatherDisplayInitialized = false;
 
 const lv_font_t *rajdhani_regular_font(int32_t size, const lv_font_t *fallback)
 {
@@ -142,24 +147,43 @@ void ui_set_time(const ClockSnapshot &snapshot)
 
 void ui_set_weather(const WeatherSnapshot &snapshot)
 {
-    if (!snapshot.valid) {
-        weather_icons_set_icon(sWeatherIcon, WeatherIcon::Unknown);
-        lv_label_set_text(sWeatherLabel, weather_service_status_text());
-        lv_label_set_text(sCurrentTempLabel, "--");
-        lv_label_set_text(sRangeLabel, "H --  L --");
-        return;
-    }
-
-    weather_icons_set_icon(sWeatherIcon, snapshot.icon);
-    lv_label_set_text(sWeatherLabel, weather_service_icon_text(snapshot.icon));
-
+    WeatherIcon icon = WeatherIcon::Unknown;
+    char weatherText[24] = {};
     char currentTemp[16] = {};
     char rangeText[24] = {};
-    snprintf(currentTemp, sizeof(currentTemp), "%d%c", snapshot.currentTemp, AppConfig::kUseMetric ? 'C' : 'F');
-    snprintf(rangeText, sizeof(rangeText), "H %d  L %d", snapshot.highTemp, snapshot.lowTemp);
 
-    lv_label_set_text(sCurrentTempLabel, currentTemp);
-    lv_label_set_text(sRangeLabel, rangeText);
+    if (!snapshot.valid) {
+        snprintf(weatherText, sizeof(weatherText), "%s", weather_service_status_text());
+        snprintf(currentTemp, sizeof(currentTemp), "--");
+        snprintf(rangeText, sizeof(rangeText), "H --  L --");
+    } else {
+        icon = snapshot.icon;
+        snprintf(weatherText, sizeof(weatherText), "%s", weather_service_icon_text(snapshot.icon));
+        snprintf(currentTemp, sizeof(currentTemp), "%d%c", snapshot.currentTemp, AppConfig::kUseMetric ? 'C' : 'F');
+        snprintf(rangeText, sizeof(rangeText), "H %d  L %d", snapshot.highTemp, snapshot.lowTemp);
+    }
+
+    if (!sWeatherDisplayInitialized || sLastWeatherIcon != icon) {
+        weather_icons_set_icon(sWeatherIcon, icon);
+        sLastWeatherIcon = icon;
+    }
+
+    if (!sWeatherDisplayInitialized || strcmp(sLastWeatherText, weatherText) != 0) {
+        snprintf(sLastWeatherText, sizeof(sLastWeatherText), "%s", weatherText);
+        lv_label_set_text(sWeatherLabel, sLastWeatherText);
+    }
+
+    if (!sWeatherDisplayInitialized || strcmp(sLastCurrentTempText, currentTemp) != 0) {
+        snprintf(sLastCurrentTempText, sizeof(sLastCurrentTempText), "%s", currentTemp);
+        lv_label_set_text(sCurrentTempLabel, sLastCurrentTempText);
+    }
+
+    if (!sWeatherDisplayInitialized || strcmp(sLastRangeText, rangeText) != 0) {
+        snprintf(sLastRangeText, sizeof(sLastRangeText), "%s", rangeText);
+        lv_label_set_text(sRangeLabel, sLastRangeText);
+    }
+
+    sWeatherDisplayInitialized = true;
 }
 
 void ui_set_status(const char *text)

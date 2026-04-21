@@ -10,7 +10,6 @@
 
 namespace {
 uint32_t sLastClockRefreshMs = 0;
-uint32_t sLastWeatherRefreshMs = 0;
 uint32_t sLastClockSyncAttemptMs = 0;
 char sStatusText[48] = "Booting";
 
@@ -95,10 +94,7 @@ void app_loop()
         sLastClockRefreshMs = now;
     }
 
-    if (now - sLastWeatherRefreshMs >= AppConfig::kWeatherUiRefreshIntervalMs) {
-        ui_set_weather(weather_service_get_snapshot());
-        sLastWeatherRefreshMs = now;
-    }
+    ui_set_weather(weather_service_get_snapshot());
 
     update_status_text();
 }
